@@ -1,5 +1,6 @@
 FoxBuild/linux-*
 FoxBuild/linux
+FoxBuild/zfs*
 FoxBuild/alpine-minirootfs/
 FoxBuild/*.tar.*
 OneRecovery.efi

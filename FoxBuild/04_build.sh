@@ -91,7 +91,7 @@ cd $KERNELPATH
 ##########################
 echo "----------------------------------------------------"
 echo -e "Building kernel with initrams using $THREADS threads...\n"
-nice -19 make -j$THREADS
+nice -19 make -s -j$THREADS
 
 ##########################
 # Bulding kernel modules
@@ -99,13 +99,25 @@ nice -19 make -j$THREADS
 
 #echo "----------------------------------------------------"
 echo -e "Building kernel mobules using $THREADS threads...\n"
-nice -19 make modules -j$THREADS
+nice -19 make -s modules -j$THREADS
 
 # Copying kernel modules in root filesystem
 echo "----------------------------------------------------"
 echo -e "Copying kernel modules in root filesystem\n"
-nice -19 make modules_install
-echo -e "Uncompressed root filesystem size WITH kernel modules: $(du -sh ../$ROOTFS | cut -f1)\n"
+nice -19 make -s modules_install
+
+# Building and installing ZFS modules
+echo "----------------------------------------------------"
+echo "Building and installing ZFS modules"
+cd ../zfs
+./autogen.sh
+./configure --with-linux=$(pwd)/../$KERNELPATH --with-linux-obj=$(pwd)/../$KERNELPATH
+nice -19 make -s -j$THREADS
+DESTDIR=$(realpath $(pwd)/../$ROOTFS)
+make DESTDIR=${DESTDIR} INSTALL_MOD_PATH=${DESTDIR} install
+echo -e "Uncompressed root filesystem size WITH kernel modules: $(du -sh $DESTDIR | cut -f1)\n"
+cd $(pwd)/../$KERNELPATH
+
 
 # Creating modules.dep
 echo "----------------------------------------------------"
@@ -117,7 +129,7 @@ nice -19 depmod -b ../$ROOTFS -F System.map $KERNELVERSION
 ##########################
 echo "----------------------------------------------------"
 echo -e "Building kernel with initrams using $THREADS threads...\n"
-nice -19 make -j$THREADS
+nice -19 make -s -j$THREADS
 
 
 ##########################
@@ -126,8 +138,12 @@ nice -19 make -j$THREADS
 
 #rm /boot/efi/EFI/OneFileLinux.efi
 #cp arch/x86/boot/bzImage /boot/efi/EFI/OneFileLinux.efi
+sync
 cp arch/x86/boot/bzImage ../OneRecovery.efi
+sync
 #cd ..
 echo "----------------------------------------------------"
-echo -e "\nBuilded successfully: $(pwd)/OneRecovery.efi\n"
-echo -e "File size: $(du -sh ../OneRecovery.efi | cut -f1)\n"
+echo -e "\nBuilded successfully: $(pwd)/../OneRecovery.efi\n"
+# WA for ZFS sync (:
+sleep 3 && sync
+echo -e "File size: $(du -sh $(pwd)/../OneRecovery.efi | cut -f1)\n"

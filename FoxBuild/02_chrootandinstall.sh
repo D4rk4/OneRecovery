@@ -4,11 +4,14 @@ nameserver 1.1.1.1
 nameserver 8.8.4.4
 EOF
 cat > alpine-minirootfs/mk.sh << EOF
+echo onerecovery > /etc/hostname && hostname -F /etc/hostname
+echo 127.0.1.1 onerecovery onerecovery >> /etc/hosts
 apk update
 apk upgrade
 apk add openrc nano mc bash parted dropbear dropbear-ssh efibootmgr \
     lvm2 cryptsetup e2fsprogs e2fsprogs-extra dosfstools \
-    dmraid mdadm fuse gawk grep sed util-linux wget curl rsync unzip tar zstd
+    dmraid mdadm fuse gawk grep sed util-linux wget curl rsync \
+    unzip tar zstd agetty debootstrap zfs libc6-compat htop
 exit
 EOF
 chmod +x alpine-minirootfs/mk.sh
