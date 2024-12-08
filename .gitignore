@@ -1,3 +1,5 @@
-alpine-minirootfs/lib/modules/*
-linux-firmware/
-OneFileLinux.efi
+FoxBuild/linux-*
+FoxBuild/linux
+FoxBuild/alpine-minirootfs/
+FoxBuild/*.tar.*
+OneRecovery.efi

@@ -11,8 +11,8 @@ MODULESPATH="$ROOTFS/lib/modules/"
 DEVURANDOM="$ROOTFS/dev/urandom"
 
 # Kernel variables
-KERNELVERSION="5.6.8"
-KERNELPATH="linux-5.6.8"
+KERNELVERSION="$(ls -d linux-* | awk '{print $1}' | head -1 | cut -d- -f2)"
+KERNELPATH="linux"
 export INSTALL_MOD_PATH="../$ROOTFS/"
 
 # Build threads equall CPU cores
@@ -30,7 +30,7 @@ echo "  | /\`\_\`>  <_/\`\ | "
 echo "  | \__/'---'\__/ | "
 echo "  |_______________| "
 echo "                    "
-echo "   OneFileLinux.efi "
+echo "   OneRecovery.efi  "
 
 ##########################
 # Checking root filesystem
@@ -91,33 +91,33 @@ cd $KERNELPATH
 ##########################
 echo "----------------------------------------------------"
 echo -e "Building kernel with initrams using $THREADS threads...\n"
-make -j$THREADS
+nice -19 make -j$THREADS
 
 ##########################
 # Bulding kernel modules
 ##########################
 
-echo "----------------------------------------------------"
+#echo "----------------------------------------------------"
 echo -e "Building kernel mobules using $THREADS threads...\n"
-make modules -j$THREADS
+nice -19 make modules -j$THREADS
 
 # Copying kernel modules in root filesystem
 echo "----------------------------------------------------"
 echo -e "Copying kernel modules in root filesystem\n"
-make modules_install
+nice -19 make modules_install
 echo -e "Uncompressed root filesystem size WITH kernel modules: $(du -sh ../$ROOTFS | cut -f1)\n"
 
 # Creating modules.dep
 echo "----------------------------------------------------"
 echo -e "Copying modules.dep\n"
-depmod -b ../$ROOTFS -F System.map $KERNELVERSION-onefile
+nice -19 depmod -b ../$ROOTFS -F System.map $KERNELVERSION
 
 ##########################
 # Bulding kernel
 ##########################
 echo "----------------------------------------------------"
 echo -e "Building kernel with initrams using $THREADS threads...\n"
-make -j$THREADS
+nice -19 make -j$THREADS
 
 
 ##########################
@@ -126,8 +126,8 @@ make -j$THREADS
 
 #rm /boot/efi/EFI/OneFileLinux.efi
 #cp arch/x86/boot/bzImage /boot/efi/EFI/OneFileLinux.efi
-cp arch/x86/boot/bzImage ../OneFileLinux.efi
+cp arch/x86/boot/bzImage ../OneRecovery.efi
 #cd ..
 echo "----------------------------------------------------"
-echo -e "\nBuilded successfully: $(pwd)/OneFileLinux.efi\n"
-echo -e "File size: $(du -sh ../OneFileLinux.efi | cut -f1)\n"
+echo -e "\nBuilded successfully: $(pwd)/OneRecovery.efi\n"
+echo -e "File size: $(du -sh ../OneRecovery.efi | cut -f1)\n"
