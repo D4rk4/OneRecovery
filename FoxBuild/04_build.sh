@@ -111,10 +111,12 @@ echo "----------------------------------------------------"
 echo "Building and installing ZFS modules"
 cd ../zfs
 ./autogen.sh
-./configure --with-linux=$(pwd)/../$KERNELPATH --with-linux-obj=$(pwd)/../$KERNELPATH
-nice -19 make -s -j$THREADS
+./configure --with-linux=$(pwd)/../$KERNELPATH --with-linux-obj=$(pwd)/../$KERNELPATH --prefix=/fake
+nice -19 make -s -j$THREADS -C module
 DESTDIR=$(realpath $(pwd)/../$ROOTFS)
+mkdir -p ${DESTDIR}/fake
 make DESTDIR=${DESTDIR} INSTALL_MOD_PATH=${DESTDIR} install
+rm -rf ${DESTDIR}/fake
 echo -e "Uncompressed root filesystem size WITH kernel modules: $(du -sh $DESTDIR | cut -f1)\n"
 cd $(pwd)/../$KERNELPATH
 
@@ -145,5 +147,5 @@ sync
 echo "----------------------------------------------------"
 echo -e "\nBuilded successfully: $(pwd)/../OneRecovery.efi\n"
 # WA for ZFS sync (:
-sleep 3 && sync
+sleep 5
 echo -e "File size: $(du -sh $(pwd)/../OneRecovery.efi | cut -f1)\n"

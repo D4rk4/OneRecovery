@@ -11,7 +11,9 @@ apk upgrade
 apk add openrc nano mc bash parted dropbear dropbear-ssh efibootmgr \
     lvm2 cryptsetup e2fsprogs e2fsprogs-extra dosfstools \
     dmraid mdadm fuse gawk grep sed util-linux wget curl rsync \
-    unzip tar zstd agetty debootstrap zfs libc6-compat htop
+    unzip tar zstd agetty debootstrap zfs 
+    # libc6-compat syslinux htop gpg eudev util-linux pciutils usbutils coreutils
+rm /var/cache/apk/*
 exit
 EOF
 chmod +x alpine-minirootfs/mk.sh
